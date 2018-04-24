@@ -24,6 +24,10 @@ EOF
     ${HADOOP_HOME}/sbin/start-dfs.sh && \
     # Start Map-Reduce cluster with the following command, run on the designated JobTracker:
     ${HADOOP_HOME}/sbin/start-yarn.sh && \
+    # Before uploading our dataset to hbase, create parent directory
+    hdfs dfs -mkdir -p hdfs://localhost:9000/user/root && \
+    # Before uploading our dataset to hbase, create parent directory
+    hdfs dfs -copyFromLocal data/ hdfs://localhost:9000/user/root/data && \
     # start jupiter notebook
     jupyter notebook --no-browser --ip='*' --port=8888
     # pyspark --master=yarn --deploy-mode=client

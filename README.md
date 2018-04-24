@@ -22,7 +22,7 @@ Note : It's not necessary on Windows since Posix file permissions is emulated.
 docker pull agileops/fastds-tutorial:latest
 
 # To get yarn running
-docker run --rm  -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap.sh
+docker run --rm -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap.sh
 
 # List your active Docker containers. And, find the container id of your latest one.
 docker ps
@@ -50,6 +50,21 @@ wc data/tpsgc-pwgsc_co-ch_tous-all.csv
 hadoop fs -cat out/part-00000
 361318 22527194 285375701
 ```
+
+
+### To test spark+jupyter:
+
+```
+# Get dataset first :
+./prepare.sh`
+
+# Download Docker image.  Be sure you actually use the latest version.
+docker pull agileops/fastds-tutorial:latest
+
+# To get yarn running
+docker run --rm -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap_dataUpload.sh
+```
+
 
 Note : For compatibilities/accessibilities/simplicites against hardware and env. requirements, tensorflow and pytorch are configured without AVX and Cuda.
 
