@@ -16,21 +16,21 @@ host *
      StrictHostKeyChecking no
      UserKnownHostsFile=/dev/null
 EOF
-chmod 600 ~/.ssh/config
 
-/usr/sbin/sshd -e &
-
-# Format a new distributed filesystem:
-hdfs namenode -format && \
+/usr/sbin/sshd -e -D & \
+    # Format a new distributed filesystem:
+    hdfs namenode -format && \
     #Start the HDFS with the following command, run on the designated NameNode.\
     ${HADOOP_HOME}/sbin/start-dfs.sh && \
     # Start Map-Reduce cluster with the following command, run on the designated JobTracker:
     ${HADOOP_HOME}/sbin/start-yarn.sh && \
+    # Before uploading our dataset to hbase, create parent directory
+    hdfs dfs -mkdir -p hdfs://localhost:9000/user/root && \
+    # Before uploading our dataset to hbase, create parent directory
+    hdfs dfs -copyFromLocal data/ hdfs://localhost:9000/user/root/data && \
     # start jupiter notebook
-    jupyter notebook --port=8888 --no-browser --ip=127.0.0.1
-
-# The sbin/start-dfs.sh script also consults the ${HADOOP_CONF_DIR}/slaves file on the NameNode and starts the DataNode daemon on all the listed slaves. By default, HADOOP_CONF_DIR=HADOOP_HOME/etc.
-#The sbin/start-yarn.sh script also consults the ${HADOOP_CONF_DIR}/slaves file on the JobTracker and starts the TaskTracker daemon on all the listed slaves.
+    jupyter notebook --no-browser --ip='*' --port=8888
+    # pyspark --master=yarn --deploy-mode=client
 
 # jps
 # # Initiated by start-dfs.sh

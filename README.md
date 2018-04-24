@@ -22,7 +22,7 @@ Note : It's not necessary on Windows since Posix file permissions is emulated.
 docker pull agileops/fastds-tutorial:latest
 
 # To get yarn running
-docker run --rm  -d -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap.sh
+docker run --rm  -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap.sh
 
 # List your active Docker containers. And, find the container id of your latest one.
 docker ps
@@ -39,16 +39,16 @@ hadoop fs -copyFromLocal data/ hdfs://localhost:9000/user/root/data
 # Start map/reduce job
 yarn jar $HADOOP_HOME/hadoop-streaming.jar -input data/tpsgc-pwgsc_co-ch_tous-all.csv -output out -mapper /bin/cat -reducer /bin/wc
 
-+# Show files in the output folder
-+hadoop fs -ls hdfs://localhost:9000/user/root/out
-+
-+# show results
-+#1) reference (computation with a commandline)
-+wc data/tpsgc-pwgsc_co-ch_tous-all.csv
-+361318 22527194 285375701
-+#2) same computation with mapreduce (when the file is too big usually)
-+hadoop fs -cat out/part-00000
-+361318 22527194 285375701
+# Show files in the output folder
+hadoop fs -ls hdfs://localhost:9000/user/root/out
+
+# show results
+#1) reference (computation with a commandline)
+wc data/tpsgc-pwgsc_co-ch_tous-all.csv
+361318 22527194 285375701
+#2) same computation with mapreduce (when the file is too big usually)
+hadoop fs -cat out/part-00000
+361318 22527194 285375701
 ```
 
 Note : For compatibilities/accessibilities/simplicites against hardware and env. requirements, tensorflow and pytorch are configured without AVX and Cuda.

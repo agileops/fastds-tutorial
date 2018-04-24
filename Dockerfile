@@ -4,9 +4,11 @@ ENV HADOOP_VERSION=2.7.6 \
     HADOOP_HOME=/opt/hadoop \
     SPARK_VERSION=2.3.0 \
     SPARK_HOME=/opt/spark \
-    PYTHON_VERSION=36 \
+    PYTHON_VERSION=3.6 \
     PYSPARK_PYTHON=python${PYTHON_VERSION} \
-    BIND_ADDRESS="127.0.0.1"
+    BIND_ADDRESS="127.0.0.1" \
+    PYSPARK_DRIVER_PYTHON=jupyter \
+    PYSPARK_DRIVER_PYTHON_OPTS="notebook --port=8888 --no-browser --ip=*"
 
 # Download and install hadoop+yarn+hdfs
 RUN yum install -y which && \
@@ -30,15 +32,18 @@ RUN curl https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/spark-$SPARK
     rm /opt/spark-$SPARK_VERSION-bin-without-hadoop.tgz
 
 # sbins dir of spark and hadoop isn't include in PATH because thereis conflict on excutables names
-ENV PATH=${SPARK_HOME}/bin:${PATH} \
-    PATH=${HADOOP_HOME}/bin:${PATH}
+ENV PATH=${SPARK_HOME}/bin:${PATH}
+ENV PATH=${HADOOP_HOME}/bin:${PATH}
+
 
 # https://spark.apache.org/docs/latest/hadoop-provided.html
 RUN echo 'export SPARK_DIST_CLASSPATH=$(hadoop classpath)' >> ${SPARK_HOME}/conf/spark-env.sh && chmod +x ${SPARK_HOME}/conf/spark-env.sh
 
+# ENV PYTHONPATH=${SPARK_HOME}/python:${PYTHONPATH}
 
-# Configure pyspark
-ENV PYTHONPATH=$SPARK_HOME/python:$PYTHONPATH
+# configure pyspark
+RUN cd $SPARK_HOME/python &&  python setup.py install
+
 # Set jupyter path
 ENV JUPYTER_DATA_DIR=/usr/local/share/jupyter
 
@@ -50,14 +55,16 @@ RUN yum install -y --setopt=tsflags=nodocs blas atlas gcc-gfortran swig gcc-c++ 
 COPY requirements.txt /opt/spark/
 
 # RUN # pip install --no-cache-dir pipenv && \
-RUN  pip install --no-cache-dir -r ${SPARK_HOME}/requirements.txt && \
-     # To get sliders and others widgets
-     jupyter nbextension enable --py --sys-prefix widgetsnbextension && \
-     jupyter toree install --spark_home=${SPARK_HOME} --interpreters=Scala,PySpark,SQL
+RUN  pip install --no-cache-dir -r ${SPARK_HOME}/requirements.txt
+RUN jupyter nbextension enable --py widgetsnbextension --sys-prefix
 
-# As suggested for BigDL tutorials
+RUN mkdir -p $HOME/.config/matplotlib && \
+echo 'backend      : Agg' >>  $HOME/.config/matplotlib/matplotlibrc
+
+# As suggested for BigDL tutorials, install ipykernel
 # https://github.com/intel-analytics/BigDL/blob/master/docker/BigDL/Dockerfile
-RUN python3 -m ipykernel install
+RUN python3 -m ipykernel install && \
+    jupyter toree install --spark_home=${SPARK_HOME} --interpreters=Scala,SQL --python="ipython3"
 
 # custom dirs :
 # /work-dir - working directory
@@ -70,7 +77,7 @@ WORKDIR /work-dir
 RUN cd /work-dir && hg clone https://fraka6@bitbucket.org/fraka6/mlboost
 # Configure mlboost paths
 ENV PATH=/work-dir/mlboost/mlboost/util:${PATH} \
-    PYTHONPATH=/work-dir/mlboost
+    PYTHONPATH=/work-dir/mlboost:${PYTHONPATH}
 
 # Volumes are used to persist data
 # Path on the local filesystem where the NameNode stores the namespace and transactions logs persistently.
@@ -83,8 +90,9 @@ COPY ./etc/hadoop/*  /opt/hadoop/etc/hadoop/
 
 # HADOOP_OPTS is an env. var. used to configure hadoop's specific java options
 ENV NAMENODE_DATA=/work-dir/hadoop/dfs.name \
-    DFS_DATA=/work-dir/hadoop/dfs.data \
-    HADOOP_OPTS="-Ddfs.name.dir=${NAMENODE_DATA} -Ddfs.data.dir=${DFS_DATA}"
+    DFS_DATA=/work-dir/hadoop/dfs.data
+ENV HADOOP_OPTS="-Ddfs.name.dir=${NAMENODE_DATA} -Ddfs.data.dir=${DFS_DATA}"
+ENV YARN_CONF_DIR=${HADOOP_HOME}/conf/etc
 
 COPY ./bin/bootstrap.sh /usr/bin/
 
@@ -99,6 +107,6 @@ EXPOSE 8030 8031 8032 8033 8040 8042 8088
 EXPOSE 8888
 
 # https://jupyter-notebook.readthedocs.io/en/latest/public_server.html#docker-cmd
-ENTRYPOINT ["/usr/bin/tini", "--"]
+ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
 
-CMD jupyter notebook --port=8888 --no-browser --ip=${BIND_ADDRESS}
+CMD jupyter notebook --port=8888 --no-browser --ip=0.0.0.0

@@ -2,7 +2,6 @@ pandas==0.22.*
 numpy==1.14.*
 scipy==1.0.*
 spark-sklearn==0.2.*
-py4j==0.10.*
 sympy==1.1.*
 keras==2.1.*
 
@@ -14,7 +13,7 @@ http://download.pytorch.org/whl/cpu/torch-0.3.1-cp36-cp36m-linux_x86_64.whl
 torchvision==0.2.*
 
 #Toree : Jupyter integration with spark
-https://dist.apache.org/repos/dist/dev/incubator/toree/0.2.0-incubating-rc4/toree-pip/toree-0.2.0.tar.gz
+https://dist.apache.org/repos/dist/dev/incubator/toree/0.2.0-incubating-rc5/toree-pip/toree-0.2.0.tar.gz
 #Jupyter 4.* is required by toree 0.2.*
 notebook==4.4.*
 jupyter-client==4.4.*
