@@ -9,11 +9,6 @@ When you create your machine, be sure you got right permission on your ssh priva
 chmod 0400 <Key_name>
 ```
 
-To clone this branch :
-```
-git clone -b spark https://github.com/agileops/fastds-tutorial.git
-```
-
 Note : It's not necessary on Windows since Posix file permissions is emulated.
 
 ### To test hadoop:
@@ -25,7 +20,7 @@ Note : It's not necessary on Windows since Posix file permissions is emulated.
 # Download Docker image.  Be sure you actually use the latest version.
 docker pull agileops/fastds-tutorial:latest
 
-# To get yarn running
+# To get yarn running.  Remmember, $PWD represent the current path. Then load folder you want to be process like $PWD/dataset on this project.
 docker run --rm -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap.sh
 
 # List your active Docker containers. And, find the container id of your latest one.
@@ -65,7 +60,7 @@ hadoop fs -cat out/part-00000
 # Download Docker image.  Be sure you actually use the latest version.
 docker pull agileops/fastds-tutorial:latest
 
-# To get yarn running
+# To get yarn running. Remmember, $PWD represent the current path. Then load folder you want to be process like $PWD/dataset on this project.
 docker run --rm -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap_dataUpload.sh
 
 # List your active Docker containers. And, find the container id of your latest one.
