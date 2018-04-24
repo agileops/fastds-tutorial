@@ -5,9 +5,13 @@ This docker projet boostrap standalone and featurefull spark environment to deve
 ## Quickstart
 
 When you create your machine, be sure you got right permission on your ssh private key.
-
 ```
 chmod 0400 <Key_name>
+```
+
+To clone this branch :
+```
+git clone -b spark https://github.com/agileops/fastds-tutorial.git
 ```
 
 Note : It's not necessary on Windows since Posix file permissions is emulated.
@@ -16,7 +20,7 @@ Note : It's not necessary on Windows since Posix file permissions is emulated.
 
 ```
 # Get dataset first :
-./prepare.sh`
+./prepare.sh
 
 # Download Docker image.  Be sure you actually use the latest version.
 docker pull agileops/fastds-tutorial:latest
@@ -56,7 +60,7 @@ hadoop fs -cat out/part-00000
 
 ```
 # Get dataset first :
-./prepare.sh`
+./prepare.sh
 
 # Download Docker image.  Be sure you actually use the latest version.
 docker pull agileops/fastds-tutorial:latest
@@ -79,6 +83,7 @@ http://localhost:8888/?token=7aa1a049fc513d143b3d607447482ad58300941d3dee8cad
 
 For remote computer, I must use :
 http://<ip or domain name>:8888/?token=7aa1a049fc513d143b3d607447482ad58300941d3dee8cad
+
 ```
 
 
