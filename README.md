@@ -63,6 +63,22 @@ docker pull agileops/fastds-tutorial:latest
 
 # To get yarn running
 docker run --rm -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap_dataUpload.sh
+
+# List your active Docker containers. And, find the container id of your latest one.
+docker ps
+
+# 20 min. after using "docker run", get jupyter url in log:
+docker logs -f
+
+And, paste this url to your browser.
+If you launch this image in remote server, replace localhost with your server ip or domain name.
+
+Example :
+From log, I can retreive url like :
+http://localhost:8888/?token=7aa1a049fc513d143b3d607447482ad58300941d3dee8cad
+
+For remote computer, I must use :
+http://<ip or domain name>:8888/?token=7aa1a049fc513d143b3d607447482ad58300941d3dee8cad
 ```
 
 
