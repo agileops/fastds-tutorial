@@ -94,7 +94,7 @@ ENV NAMENODE_DATA=/work-dir/hadoop/dfs.name \
 ENV HADOOP_OPTS="-Ddfs.name.dir=${NAMENODE_DATA} -Ddfs.data.dir=${DFS_DATA}"
 ENV YARN_CONF_DIR=${HADOOP_HOME}/conf/etc
 
-COPY ./bin/bootstrap.sh /usr/bin/
+COPY ./bin/* /usr/bin/
 
 # Hdfs ports
 EXPOSE 50010 50020 50070 50075 50090 8020 9000
