@@ -94,6 +94,23 @@ ENV NAMENODE_DATA=/work-dir/hadoop/dfs.name \
 ENV HADOOP_OPTS="-Ddfs.name.dir=${NAMENODE_DATA} -Ddfs.data.dir=${DFS_DATA}"
 ENV YARN_CONF_DIR=${HADOOP_HOME}/conf/etc
 
+# Install official hbase lib for python 3
+RUN curl http://apache.forsale.plus/hbase/2.0.0/hbase-2.0.0-src.tar.gz > hbase-2.0.0-src.tar.gz && \
+    mkdir /tmp/hbase &&  \
+    tar xvfp hbase-2.0.0-src.tar.gz --strip-components=1 -C /tmp/hbase  && \
+    curl http://apache.mirror.globo.tech/thrift/0.11.0/thrift-0.11.0.tar.gz > thrift-0.11.0.tar.gz && \
+    mkdir /tmp/thrift && \
+    tar xvfp thrift-0.11.0.tar.gz --strip-components=1 -C /tmp/thrift && \
+    yum install -y make && \
+    cd /tmp/thrift && \
+    ./configure && make install && \
+    cd lib/py && python3 setup.py install && \
+    mkdir /opt/hbase-python && \
+    cd /tmp/hbase && \
+    thrift --out /opt/hbase-python --gen py ./hbase-thrift/src/main/resources/org/apache/hadoop/hbase/thrift2/hbase.thrift && \
+    rm -R /tmp/hbase /tmp/thrift
+ENV PYTHONPATH=/opt/hbase-python:$PYTHONPATH
+
 COPY ./bin/* /usr/bin/
 
 # Hdfs ports
