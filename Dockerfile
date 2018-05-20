@@ -111,6 +111,8 @@ RUN curl http://apache.forsale.plus/hbase/2.0.0/hbase-2.0.0-src.tar.gz > hbase-2
     rm -R /tmp/hbase /tmp/thrift
 ENV PYTHONPATH=/opt/hbase-python:$PYTHONPATH
 
+RUN pip install happybase==1.1.*
+
 COPY ./bin/* /usr/bin/
 
 # Hdfs ports
