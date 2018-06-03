@@ -114,7 +114,8 @@ RUN cd /tmp/ && \
 
 ENV PYTHONPATH=/opt/hbase-python:$PYTHONPATH
 
-RUN pip install happybase==1.1.*
+RUN pip install happybase==1.1.* phoenixdb==0.7.*
+RUN ln -s /opt/rh/rh-python36/root/usr/bin/python3.6 /opt/rh/rh-python36/root/usr/bin/python36
 
 COPY ./bin/* /usr/bin/
 
