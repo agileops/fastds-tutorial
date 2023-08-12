@@ -1,99 +1,96 @@
+
 # docker-pyspark-custom
 
-This docker projet boostrap standalone and featurefull spark environment to develop ML.
+This Docker project provides a standalone and feature-rich Spark environment for ML development.
 
 ## Quickstart
 
-When you create your machine, be sure you got right permission on your ssh private key.
+When setting up your machine, ensure you have the correct permissions for your SSH private key.
 ```
 chmod 0400 <Key_name>
 ```
 
-Note : It's not necessary on Windows since Posix file permissions is emulated.
+**Note**: This step isn't necessary on Windows as it emulates POSIX file permissions.
 
-### To test hadoop:
+### Testing Hadoop:
 
 ```
-# Get dataset first :
+# First, fetch the dataset:
 ./prepare.sh
 
-# Download Docker image.  Be sure you actually use the latest version.
+# Download the Docker image. Ensure you are using the latest version.
 docker pull agileops/fastds-tutorial:latest
 
-# To get yarn running.  Remmember, $PWD represent the current path. Then load folder you want to be process like $PWD/dataset on this project.
+# Start YARN. Remember, $PWD denotes the current path. Load the desired folder for processing, such as $PWD/dataset for this project.
 docker run --rm -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap.sh
 
-# List your active Docker containers. And, find the container id of your latest one.
+# List all active Docker containers and identify the container ID of the most recent one.
 docker ps
 
-# Enter in your docker image
+# Access your Docker container.
 docker exec -ti <docker_container_id> bash
 
-# Before uploading our dataset to hbase, create parent directory
+# Before uploading the dataset to HBase, create the parent directory.
 hadoop fs -mkdir -p hdfs://localhost:9000/user/root
 
-# Provision hdfs using local data. To learn more commands
+# Populate HDFS using local data. For additional commands:
 hadoop fs -copyFromLocal data/ hdfs://localhost:9000/user/root/data
 
-# Start map/reduce job
+# Initiate a map/reduce job.
 yarn jar $HADOOP_HOME/hadoop-streaming.jar -input data/tpsgc-pwgsc_co-ch_tous-all.csv -output out -mapper /bin/cat -reducer /bin/wc
 
-# Show files in the output folder
+# Display files in the output directory.
 hadoop fs -ls hdfs://localhost:9000/user/root/out
 
-# show results
-#1) reference (computation with a commandline)
+# Display results:
+#1) Computation reference using the command line:
 wc data/tpsgc-pwgsc_co-ch_tous-all.csv
-361318 22527194 285375701
-#2) same computation with mapreduce (when the file is too big usually)
+# 361318 22527194 285375701
+#2) Same computation using MapReduce (typically for large files):
 hadoop fs -cat out/part-00000
-361318 22527194 285375701
+# 361318 22527194 285375701
 ```
 
-
-### To test spark+jupyter:
+### Testing Spark + Jupyter:
 
 ```
-# Get dataset first :
+# First, fetch the dataset:
 ./prepare.sh
 
-# Download Docker image.  Be sure you actually use the latest version.
+# Download the Docker image. Ensure you are using the latest version.
 docker pull agileops/fastds-tutorial:latest
 
-# To get yarn running. Remmember, $PWD represent the current path. Then load folder you want to be process like $PWD/dataset on this project.
+# Start YARN. Remember, $PWD denotes the current path. Load the desired folder for processing, such as $PWD/dataset for this project.
 docker run --rm -d -p8888:8888 -p9000:9000 -p 8088:8088 -v $PWD/dataset:/work-dir/data -ti agileops/fastds-tutorial bootstrap_dataUpload.sh
 
-# List your active Docker containers. And, find the container id of your latest one.
+# List all active Docker containers and identify the container ID of the most recent one.
 docker ps
 
-# 20 min. after using "docker run", get jupyter url in log:
+# 20 minutes after executing "docker run", retrieve the Jupyter URL from the logs:
 docker logs -f
 
-And, paste this url to your browser.
-If you launch this image in remote server, replace localhost with your server ip or domain name.
+# Copy the provided URL and paste it into your browser. If you started this image on a remote server, replace "localhost" with your server's IP or domain name.
 
-Example :
-From log, I can retreive url like :
-http://localhost:8888/?token=7aa1a049fc513d143b3d607447482ad58300941d3dee8cad
+# Example:
+# From the log, you might get a URL like:
+# http://localhost:8888/?token=7aa1a049fc513d143b3d607447482ad58300941d3dee8cad
 
-For remote computer, I must use :
-http://<ip or domain name>:8888/?token=7aa1a049fc513d143b3d607447482ad58300941d3dee8cad
-
+# For remote access, you should use:
+# http://<ip_or_domain_name>:8888/?token=7aa1a049fc513d143b3d607447482ad58300941d3dee8cad
 ```
 
+**Note**: For compatibility, accessibility, and simplicity against hardware and environmental requirements, both TensorFlow and PyTorch are configured without AVX and CUDA support.
 
-Note : For compatibilities/accessibilities/simplicites against hardware and env. requirements, tensorflow and pytorch are configured without AVX and Cuda.
+## Suggested Datasets
 
-## Suggested datasets
-
-To download theses datasets use the following command after cloning this repos.
+To download these datasets, use the following command after cloning this repository:
 
 ```
 ./prepare.sh
 ```
 
-Canada - Contrats octroyés 2009-ajd. 270 mo
-https://ouvert.canada.ca/data/fr/dataset/53753f06-8b28-42d7-89f7-04cd014323b0
+- **Canada - Contracts Granted from 2009-Present (270 MB)** 
+  [Link](https://ouvert.canada.ca/data/fr/dataset/53753f06-8b28-42d7-89f7-04cd014323b0)
 
-Montréal - Comptage sur les pistes cyclables
-http://donnees.ville.montreal.qc.ca/dataset/velos-comptage
+- **Montréal - Bike Path Counting** 
+  [Link](http://donnees.ville.montreal.qc.ca/dataset/velos-comptage)
